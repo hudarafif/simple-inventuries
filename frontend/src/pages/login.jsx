@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext.jsx";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import "../Login.css";
 
 function Login() {
@@ -10,9 +10,10 @@ function Login() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const location = useLocation();
   const {login } = useAuth();
 
+  const from = location.state?.from?.pathname || "/";
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -23,10 +24,14 @@ function Login() {
         const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`, {email, password});
         if (response.data.token){
             await login(response.data.user, response.data.token);
-                if (response.data.user.role === "admin") {
-                    navigate("/admin/dashboard");
+                if (from !== "/") {
+                    navigate(from, { replace: true});
                 } else {
-                    navigate("/kasir/dashboard");
+                  if (response.data.user.role === "admin") {
+                    navigate("/admin/dashboard", { replace: true });
+                  } else {
+                    navigate("/kasir/dashboard", { replace: true });
+                  }
                 } 
             } else {
                 alert(response.data.message || "Email atau password salah.");

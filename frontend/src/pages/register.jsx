@@ -25,7 +25,7 @@ const Register = () => {
         `${import.meta.env.VITE_API_BASE_URL}/api/auth/register`,
         formData
       );
-      // console.log(process.env.REACT_APP_API_URL);
+
       setMessage(res.data.message || "Register success!");
     } catch (error) {
       setMessage(error.response?.data?.message || "Register failed!");
