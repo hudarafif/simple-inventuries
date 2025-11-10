@@ -10,6 +10,7 @@ import Register from "./pages/register";
 // (Pastikan path impor ini sesuai dengan struktur folder Anda)
 import AdminDashboard from "./pages/AdminDashboard";
 import ManageProducts from "./pages/ManageProducts";
+import ManageUsers from "./pages/ManageUsers";
 import KasirDashboard from "./pages/KasirDashboard";
 import NewTransaction from "./pages/NewTransaction";
 
@@ -35,6 +36,7 @@ function App() {
           {/* 3. Rute-rute ini akan di-render di dalam <Outlet /> MainLayout */}
           <Route path="dashboard" element={<AdminDashboard />} /> 
           <Route path="products" element={<ManageProducts />} />
+          <Route path="users" element={<ManageUsers />} />
           {/* Tambahkan rute admin lainnya di sini */}
         </Route>
 
