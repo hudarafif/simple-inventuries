@@ -55,7 +55,7 @@ const KasirDashboard = () => {
                             style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '8px' }}>
                                 <h4>{product.name}</h4>
                                 <p>Harga: Rp {product.price}</p>
-                                <p>Stock: {product.description}</p>
+                                <p>Stock: {product.stock}</p>
                             </div>
                         ))
                     )}
