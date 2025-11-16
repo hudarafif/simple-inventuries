@@ -11,14 +11,14 @@ const ManageUsers = () => {
 
     // console.log("TOKEN YANG DIGUNAKAN DI MANAGEUSERS:", token);
     const API_URL = import.meta.env.VITE_API_BASE_URL;
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    };
 
     const fecthUsers = async () => {
         try {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            };
             const response = await axios.get(`${API_URL}/api/users`, config);
             setUsers(response.data);
             setLoading(false);
@@ -35,11 +35,6 @@ const ManageUsers = () => {
     const handleDelete = async (id) => {
         if (window.confirm('apakah anda yakin ingin menghapus user ini?')) {
             try {
-                const config = {
-                    header: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                };
                 await axios.delete(`${API_URL}/api/users/${id}`, config);
                 fecthUsers();
             } catch (err) {

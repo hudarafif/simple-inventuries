@@ -13,6 +13,7 @@ import ManageProducts from "./pages/ManageProducts";
 import ManageUsers from "./pages/ManageUsers";
 import KasirDashboard from "./pages/KasirDashboard";
 import NewTransaction from "./pages/NewTransaction";
+import RiwayatTransaction from "./pages/RiwayatTransaction";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
           {/* 3. Rute-rute ini akan di-render di dalam <Outlet /> MainLayout */}
           <Route path="dashboard" element={<KasirDashboard />} />
           <Route path="transaction" element={<NewTransaction />} />
+          <Route path="history" element={<RiwayatTransaction />} />
           {/* Tambahkan rute kasir lainnya di sini */}
         </Route>
 
