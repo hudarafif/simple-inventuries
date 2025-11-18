@@ -12,35 +12,35 @@ const KasirDashboard = () => {
 
   // --- STATE BARU UNTUK KERANJANG ---
   const [cartItems, setCartItems] = useState([]);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const { token } = useAuth();
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // --- 1. FUNGSI FETCH PRODUK (Sudah ada) ---
-  useEffect(() => {
+  const fetchProducts = React.useCallback(async () => {
     setLoading(true);
-    const fetchProducts = async () => {
-      try {
-        const config = {
-          headers: { Authorization: `Bearer ${token}` },
-          params: { search: searchTerm },
-        };
-        const response = await axios.get(`${API_URL}/api/products`, config);
-        setProducts(response.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (token) {
-      const delayDebounceFn = setTimeout(() => {
-        fetchProducts();
-      }, 500);
-      return () => clearTimeout(delayDebounceFn);
-    }
+    try {
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { search: searchTerm },
+      };
+      const response = await axios.get(`${API_URL}/api/products`, config);
+      setProducts(response.data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    } 
   }, [token, searchTerm, API_URL]);
+  // --- 1. FUNGSI FETCH PRODUK (Sudah ada) ---
+    useEffect(() => {
+      if (token) {
+        const delayDebounceFn = setTimeout(() => {
+          fetchProducts();
+        }, 500);
+        return () => clearTimeout(delayDebounceFn);
+      }
+    }, [fetchProducts, token]); 
 
   // --- 2. LOGIKA KERANJANG ---
 
@@ -100,13 +100,37 @@ const KasirDashboard = () => {
       alert('Keranjang masih kosong!');
       return;
     }
-    
-    // Nanti, di sinilah Anda akan memanggil API POST /api/transactions
-    alert(`Checkout dengan total: Rp ${totalPrice.toLocaleString('id-ID')}\n(Fitur ini belum terhubung ke backend)`);
-    
     // Setelah berhasil checkout (nanti):
-    // setCartItems([]); // Kosongkan keranjang
-    // fetchProducts(); // Refresh stok produk
+    setCheckoutLoading(true);
+    setError(null);
+    try {
+      const transactionData = {
+        cartItems: cartItems.map(item => ({
+          _id: item._id,
+          name: item.name,
+          qty: item.qty,
+          price: item.price
+        })),
+        totalPrice: totalPrice
+      };
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+      };
+      await axios.post(`${API_URL}/api/transactions`, transactionData, config);
+      alert('Checkout berhasil disiram!');
+      // setCartItems([]); // Kosongkan keranjang
+      setCartItems([]); 
+      // fetchProducts(); // Refresh stok produk
+      fetchProducts();
+    } catch (error) {
+      const errorMessage = error.response ? error.response.data.message : error.message;
+      setError(errorMessage);
+    } finally {
+      setCheckoutLoading(false);
+    }
+    
   };
 
   // --- 5. TAMPILAN (UI) ---
@@ -178,9 +202,9 @@ const KasirDashboard = () => {
           <button 
             onClick={handleCheckout} 
             className="checkout-btn"
-            disabled={cartItems.length === 0}
+            disabled={cartItems.length === 0 || checkoutLoading}
           >
-            Bayar (Checkout)
+            {checkoutLoading ? 'Loading...' : 'Bayar (Checkout)'}
           </button>
         </div>
       </div>
